@@ -2,19 +2,23 @@ package com.mindmapper.security.service;
 
 import com.mindmapper.security.dto.request.RegisterUserRequest;
 import com.mindmapper.security.dto.response.UserProfile;
-import com.mindmapper.security.utils.UserRole;
 import com.mindmapper.utility.Response;
 import com.mindmapper.entity.Role;
 import com.mindmapper.entity.UserInfo;
 import com.mindmapper.entity.embeddable.Name;
 import com.mindmapper.repository.RoleRepository;
 import com.mindmapper.repository.UserRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -27,6 +31,8 @@ public class UserService implements UserDetailsService, IUserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    JavaMailSender mailSender;
 
     @Override
     public Response registerUser(RegisterUserRequest registerUserRequest){
@@ -94,21 +100,34 @@ public class UserService implements UserDetailsService, IUserService {
     }
 
     @Override
-    public UserProfile getUserProfileById(Long profileId) {
+    public String forgetPassword(String email) throws MessagingException {
 
-        Optional<UserInfo> userOptional = userRepository.findById(profileId);
-        if(userOptional.isEmpty()){
-            throw new IllegalArgumentException("User not found for ID: " + profileId);
+        if(email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email is required to reset password");
         }
-        UserInfo userInfo = userOptional.get();
-        UserProfile userProfile = new UserProfile();
-        userProfile.setProfileId(userInfo.getUserId());
-        userProfile.setFirstName(userInfo.getName().getFirstName());
-        userProfile.setMiddleName(userInfo.getName().getMiddleName());
-        userProfile.setLastName(userInfo.getName().getLastName());
-        userProfile.setEmail(userInfo.getEmail());
 
-        return userProfile;
+        Optional<UserInfo> userOptional = userRepository.findByEmail(email);
+        if (!userOptional.isEmpty()) {
+            // Logic to send OTP to the user's email
+            // For example, generate OTP and send email
+            String otp = generateOTP();
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(email);
+            helper.setSubject("Mind Mapper Password Reset OTP");
+            helper.setText("Your OTP for password reset is: " + otp);
+            mailSender.send(message);
+
+        }
+        return "If email exist OTP sent successfully";
+    }
+
+    private String generateOTP() {
+
+        // Generate a random 6-digit OTP
+        int otp = (int)(Math.random() * 900000) + 100000;
+        return String.valueOf(otp);
     }
 
 

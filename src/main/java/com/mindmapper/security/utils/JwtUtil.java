@@ -1,5 +1,6 @@
 package com.mindmapper.security.utils;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -36,5 +37,19 @@ public class JwtUtil {
         }catch (Exception e){
             return null;
         }
+    }
+
+    public long getRemainingTimeInSeconds(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        Date expiration = claims.getExpiration();
+        long now = System.currentTimeMillis();
+        long diff = expiration.getTime() - now;
+
+        return diff > 0 ? diff / 1000 : 0; // seconds remaining
     }
 }

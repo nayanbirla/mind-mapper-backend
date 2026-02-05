@@ -4,6 +4,7 @@ import com.mindmapper.entity.UserInfo;
 import com.mindmapper.security.dto.request.RegisterUserRequest;
 import com.mindmapper.security.dto.response.UserProfile;
 import com.mindmapper.utility.Response;
+import jakarta.mail.MessagingException;
 
 public interface IUserService {
 
@@ -11,5 +12,5 @@ public interface IUserService {
 
     UserInfo loadOrCreateUser(String email);
 
-    UserProfile getUserProfileById(Long profileId);
+    String forgetPassword(String email) throws MessagingException;
 }
