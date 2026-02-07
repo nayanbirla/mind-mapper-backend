@@ -67,7 +67,6 @@ public class JWTRefereshFilter extends OncePerRequestFilter {
                 path.startsWith("/oauth2/") ||
                 path.startsWith("/login/") ||
                 path.equals("/generate-token") ||
-                path.startsWith("/course-images/") ||
-                path.startsWith("/refresh-token");// Also skip for login
+                path.startsWith("/course-images/");
     }
 }

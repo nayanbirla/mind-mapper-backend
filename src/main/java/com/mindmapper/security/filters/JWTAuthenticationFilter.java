@@ -49,15 +49,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String token = jwtUtil.generateToken(authenticate.getName(),1);
             response.setHeader("authorization","Bearer "+token);
 
-            String referestToken = jwtUtil.generateToken(authenticate.getName(),60*24*7);
+            String refreshToken = jwtUtil.generateToken(authenticate.getName(),60*24*7);
 
-            Cookie cookie = new Cookie("refreshToken", referestToken);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false);
-            cookie.setPath("/");
-            cookie.setMaxAge(7*24*60*60);
+            String cookieHeader = String.format(
+                    "refreshToken=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=Lax",
+                    refreshToken, 7 * 24 * 60 * 60
+            );
 
-            response.addCookie(cookie);
+            response.setHeader("Set-Cookie", cookieHeader);
         }
     }
 

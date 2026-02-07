@@ -1,15 +1,15 @@
 package com.mindmapper.repository;
 
 import com.mindmapper.entity.Lecture;
+import com.mindmapper.entity.Section;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface LectureRepository extends JpaRepository<Lecture,Long> {
+public interface LectureRepository extends JpaRepository<Lecture, Long> {
+    List<Lecture> findByLecture_SectionId(Long sectionId);
 
-    @Query("SELECT l FROM Lecture l WHERE l.section.sectionId = :sectionId")
-    List<Lecture> findAllLectureBySectionId(Long sectionId);
+    Integer countBySection_SectionId(Long sectionId);
 }
