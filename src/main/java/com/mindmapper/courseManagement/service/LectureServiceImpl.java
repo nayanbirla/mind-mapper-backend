@@ -108,7 +108,7 @@ public class LectureServiceImpl implements LectureService {
         }
 
         Section section = sectionOptional.get();
-        List<Lecture> lecture = lectureRepository.findAllLectureBySectionId(section.getSectionId());
+        List<Lecture> lecture = lectureRepository.findByLecture_SectionId(section.getSectionId());
         if (lecture.isEmpty()) {
             throw new IllegalArgumentException("No lectures found for section ID: " + sectionId);
         }

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
-    List<Lecture> findBySection_SectionId(Long sectionId);
+    List<Lecture> findByLecture_SectionId(Long sectionId);
 
     Integer countBySection_SectionId(Long sectionId);
 }
